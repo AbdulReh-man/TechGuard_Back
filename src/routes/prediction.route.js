@@ -1,8 +1,8 @@
-import express from "express"
-const router = express.Router();
-import {predictNews} from '../controllers/prediction.controller.js'
+// import express from "express"
+// const router = express.Router();
+// import {predictNews} from '../controllers/prediction.controller.js'
 
 
-router.route('/predict').post(predictNews);
+// router.route('/predict').post(predictNews);
 
-export default router;
+// export default router;

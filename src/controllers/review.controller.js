@@ -1,11 +1,11 @@
-// // controllers/reviewController.js
-// import { Review } from '../models/review.model.js';
-// import mongoose from 'mongoose';
-// import { exec } from 'child_process';
-// import path from 'path';
-// import util from 'util';
-// // POST - Add review
-// const execAsync = util.promisify(exec);
+// controllers/reviewController.js
+import { Review } from '../models/review.model.js';
+import mongoose from 'mongoose';
+import axios from 'axios';
+
+// POST - Add review
+const execAsync = util.promisify(exec);
+const ai_api = "https://ai-review-detect.onrender.com/predict";
 
 // export const createReview = async (req, res) => {
 //   try {
@@ -69,25 +69,6 @@
 //   }
 // };
 
-import { Review } from "../models/review.model.js";
-import mongoose from "mongoose";
-import { exec } from "child_process";
-import path from "path";
-import util from "util";
-
-const execAsync = util.promisify(exec);
-
-// Helper to get correct python path depending on environment
-function getPythonPath() {
-  if (process.env.RENDER) {
-    // On Render, our venv is at .venv/bin/python
-    return path.resolve(".venv/bin/python");
-  } else {
-    // Local dev: adjust if your venv folder name is different
-    return path.resolve("./venv/bin/python");
-  }
-}
-
 export const createReview = async (req, res) => {
   try {
     const { refId, refType, rating, comment } = req.body;
@@ -111,25 +92,17 @@ export const createReview = async (req, res) => {
         .json({ message: "Rating must be between 1 and 5." });
     }
 
-    const scriptPath = path.resolve("./utils/predict.py");
-    const pythonPath = getPythonPath();
-
-    console.log("Script: ", scriptPath);
-    console.log("Python: ", pythonPath);
-
     let aiResult = { isFake: false, confidenceScore: 0 };
 
     if (comment) {
       try {
-        const command = `${pythonPath} ${scriptPath} "${comment.replace(/"/g, '\\"')}"`;
-        const { stdout } = await execAsync(command);
-        const result = JSON.parse(stdout);
+        const response = await axios.post(ai_api, { text: comment });
+        const result = response.data; // { prediction: [0] }
 
         aiResult = {
-          isFake: result.prediction,
-          confidenceScore: result.confidence,
+          isFake: result.prediction[0] === 1, // convert 1/0 to boolean
+          confidenceScore: result.confidence || 0, // if your API provides confidence
         };
-        console.log("airesult", aiResult);
       } catch (error) {
         console.error("AI analysis failed:", error.message);
       }

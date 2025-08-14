@@ -43,8 +43,8 @@ app.use("/api/techguard/users", userRouter);
   app.use("/api/techguard/admin", adminRouter);
   app.use("/api/techguard/serviceBooking", serviceBookingRouter);
   app.use("/api/techguard/review", reviewRouter);
-  app.use('/api', predictionRouter);
-app.use("/api/prediction", predictRouter);
+//   app.use('/api', predictionRouter);
+// app.use("/api/prediction", predictRouter);
   // app.use("/api/techguard/payment", payment);
 
 

@@ -53,67 +53,67 @@
 
 // export { predictNews };
 
-import { PythonShell } from "python-shell";
+// import { PythonShell } from "python-shell";
 
-const predictNews = async (req, res) => {
-  try {
-    const { text } = req.body;
+// const predictNews = async (req, res) => {
+//   try {
+//     const { text } = req.body;
 
-    console.log("Received text:", text);
+//     console.log("Received text:", text);
 
-    if (!text) {
-      return res.status(400).json({ error: "Text input is required" });
-    }
+//     if (!text) {
+//       return res.status(400).json({ error: "Text input is required" });
+//     }
 
-    const options = {
-      mode: "text",
-      pythonPath: "./venv/bin/python", // Adjust path based on your OS/environment
-      scriptPath: "./utils",
-      args: [text],
-      stderr: true, // Include stderr output for error handling
-    };
+//     const options = {
+//       mode: "text",
+//       pythonPath: "./venv/bin/python", // Adjust path based on your OS/environment
+//       scriptPath: "./utils",
+//       args: [text],
+//       stderr: true, // Include stderr output for error handling
+//     };
 
-    console.log("PythonShell options:", options);
+//     console.log("PythonShell options:", options);
 
-    PythonShell.run("predict.py", options, (err, results) => {
-      console.log("Returned from Python script");
-      console.log("Raw results:", results);
+//     PythonShell.run("predict.py", options, (err, results) => {
+//       console.log("Returned from Python script");
+//       console.log("Raw results:", results);
 
-      if (err) {
-        console.error("PythonShell Error:", err);
-        return res.status(500).json({
-          error: "Prediction failed",
-          details: err.message || "Unknown Python error",
-        });
-      }
+//       if (err) {
+//         console.error("PythonShell Error:", err);
+//         return res.status(500).json({
+//           error: "Prediction failed",
+//           details: err.message || "Unknown Python error",
+//         });
+//       }
 
-      if (!results || results.length === 0) {
-        console.error("No output received from Python script");
-        return res.status(500).json({
-          error: "No output from prediction script",
-        });
-      }
+//       if (!results || results.length === 0) {
+//         console.error("No output received from Python script");
+//         return res.status(500).json({
+//           error: "No output from prediction script",
+//         });
+//       }
 
-      try {
-        const cleanedOutput = results[0].trim();
-        console.log("Cleaned output:", cleanedOutput);
+//       try {
+//         const cleanedOutput = results[0].trim();
+//         console.log("Cleaned output:", cleanedOutput);
 
-        const prediction = JSON.parse(cleanedOutput);
-        console.log("Parsed Prediction:", prediction);
+//         const prediction = JSON.parse(cleanedOutput);
+//         console.log("Parsed Prediction:", prediction);
 
-        res.json(prediction);
-      } catch (parseError) {
-        console.error("JSON Parse Error:", parseError.message);
-        res.status(500).json({
-          error: "Failed to parse prediction",
-          details: parseError.message,
-        });
-      }
-    });
-  } catch (error) {
-    console.error("Server Error:", error.message);
-    res.status(500).json({ error: "Server error", details: error.message });
-  }
-};
+//         res.json(prediction);
+//       } catch (parseError) {
+//         console.error("JSON Parse Error:", parseError.message);
+//         res.status(500).json({
+//           error: "Failed to parse prediction",
+//           details: parseError.message,
+//         });
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Server Error:", error.message);
+//     res.status(500).json({ error: "Server error", details: error.message });
+//   }
+// };
 
-export { predictNews };
+// export { predictNews };
