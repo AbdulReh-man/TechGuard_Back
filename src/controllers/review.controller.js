@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 
 // POST - Add review
-const ai_api = "https://ai-review-detect.onrender.com/predict";
-// const ai_api = "http://0.0.0.0:10000/predict";
+// const ai_api = "https://ai-review-detect.onrender.com/predict";
+const ai_api = "http://0.0.0.0:10000/predict";
 //
 
 export const createReview = async (req, res) => {
