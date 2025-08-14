@@ -37,12 +37,12 @@ export const createReview = async (req, res) => {
         const { stdout } = await execAsync(command);
         const result = JSON.parse(stdout); // Make sure your Python script returns valid JSON
         // console.log("result",result.prediction,result.confidence);
-        
+
         aiResult = {
           isFake: result.prediction,
           confidenceScore: result.confidence
         };
-        // console.log("airesult",aiResult);
+        console.log("airesult",aiResult);
         
       } catch (error) {
         console.error('AI analysis failed:', error.message);
