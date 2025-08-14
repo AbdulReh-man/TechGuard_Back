@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import joblib
@@ -8,11 +9,13 @@ from textblob import TextBlob
 import scipy.sparse as sp
 import numpy as np
 
-# Lo
-# ad saved assets
+# Load saved assets
 try:
-    rf_model = joblib.load('./utils/Random_Forest_model.pkl')
-    tfidf_vectorizer = joblib.load('./utils/tfidf_vectorizer.pkl')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    rf_model = joblib.load(os.path.join(BASE_DIR, "Random_Forest_model.pkl"))
+    tfidf_vectorizer = joblib.load(os.path.join(BASE_DIR, "tfidf_vectorizer.pkl"))
+    # rf_model = joblib.load('./utils/Random_Forest_model.pkl')
+    # tfidf_vectorizer = joblib.load('./utils/tfidf_vectorizer.pkl')
 except Exception as e:
     print(json.dumps({"error": f"Error loading model/vectorizer: {str(e)}"}))
     sys.exit(1)
@@ -53,22 +56,39 @@ def predict_text(text):
 
     return prediction, probability
 
-if __name__ == "__main__":
-    try:
-        if len(sys.argv) > 1:
-            input_text = sys.argv[1]
-            pred, prob = predict_text(input_text)
+# if __name__ == "__main__":
+#     try:
+#         if len(sys.argv) > 1:
+#             input_text = sys.argv[1]
+#             pred, prob = predict_text(input_text)
 
-            result = {
-                "prediction": "Fake" if pred == 1 else "Genuine",
-                "confidence": round(float(max(prob)), 2)
-            }
-            print(json.dumps(result))  # Proper JSON output for Node
+#             result = {
+#                 "prediction": "Fake" if pred == 1 else "Genuine",
+#                 "confidence": round(float(max(prob)), 2)
+#             }
+#             print(json.dumps(result))  # Proper JSON output for Node
             
-        else:
-            print(json.dumps({"error": "No input text provided"}))
-            sys.exit(1)
+#         else:
+#             print(json.dumps({"error": "No input text provided"}))
+#             sys.exit(1)
 
+#     except Exception as e:
+#         print(json.dumps({"error": f"Runtime error: {str(e)}"}))
+#         sys.exit(1)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "No input text provided"}))
+        sys.exit(0)
+    try:
+        input_text = sys.argv[1]
+        pred, prob = predict_text(input_text)
+        result = {
+            "prediction": "Fake" if pred == 1 else "Genuine",
+            "confidence": round(float(max(prob)), 2)
+        }
+        print(json.dumps(result))
     except Exception as e:
         print(json.dumps({"error": f"Runtime error: {str(e)}"}))
-        sys.exit(1)
+    sys.exit(0)
