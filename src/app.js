@@ -29,8 +29,8 @@ import userRouter from "./routes/user.routes.js";
  import adminRouter from "./routes/admin.Auth.js";
  import serviceBookingRouter from "./routes/serviceBooking.routes.js";
  import reviewRouter from "./routes/review.routes.js";
- import predictionRouter from "./routes/prediction.route.js"
- import predictRouter from "./routes/predict.routes.js"
+//  import predictionRouter from "./routes/prediction.route.js"
+//  import predictRouter from "./routes/predict.routes.js"
 //  import payment from "./routes/payment.routes.js";
 
 //routes declaration
