@@ -5,68 +5,8 @@ import axios from 'axios';
 
 // POST - Add review
 const ai_api = "https://ai-review-detect.onrender.com/predict";
-
-// export const createReview = async (req, res) => {
-//   try {
-//     const { refId, refType, rating, comment } = req.body;
-//     console.log("body",req.body);
-    
-
-//     if (!refId || !refType || !rating) {
-//       return res.status(400).json({ message: 'refId, refType, and rating are required.' });
-//     }
-
-//     if (!['Product', 'Service'].includes(refType)) {
-//       return res.status(400).json({ message: 'Invalid refType. Must be "Product" or "Service"' });
-//     }
-
-//     if (rating < 1 || rating > 5) {
-//       return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
-//     }
-
-//     // Path to your predict.py script
-//     const scriptPath = path.resolve('./utils/predict.py');
-//     const pythonPath = path.resolve('./venv/bin/python');
-
-//     let aiResult = { isFake: false, confidenceScore: 0 };
-
-//     if (comment) {
-//       try {
-//         const command = `${pythonPath} ${scriptPath} "${comment.replace(/"/g, '\\"')}"`;
-//         const { stdout } = await execAsync(command);
-//         const result = JSON.parse(stdout); // Make sure your Python script returns valid JSON
-//         // console.log("result",result.prediction,result.confidence);
-        
-//         aiResult = {
-//           isFake: result.prediction,
-//           confidenceScore: result.confidence
-//         };
-//         // console.log("airesult",aiResult);
-        
-//       } catch (error) {
-//         console.error('AI analysis failed:', error.message);
-//       }
-//     }
-
-//     const newReview = new Review({
-//       user: req.user._id,
-//       refId,
-//       refType,
-//       rating,
-//       comment,
-//       aiAnalysis: aiResult
-//     });
-
-
-//     await newReview.save();
-
-//     res.status(201).json({ message: 'Review added successfully', review: newReview });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Error creating review', error: error.message });
-//   }
-// };
+// const ai_api = "http://0.0.0.0:10000/predict";
+//
 
 export const createReview = async (req, res) => {
   try {
@@ -91,13 +31,14 @@ export const createReview = async (req, res) => {
         .json({ message: "Rating must be between 1 and 5." });
     }
 
-    let aiResult = { isFake: false, confidenceScore: 0 };
+    let aiResult = { isFake: "Fake", confidenceScore: 0 };
 
     if (comment) {
       try {
         const response = await axios.post(ai_api, { text: comment });
         const result = response.data; // { prediction: [0] }
-
+        console.log("AI Response from Server: ", result);
+        
         aiResult = {
           isFake: result.prediction[0] === 1, // convert 1/0 to boolean
           confidenceScore: result.confidence || 0, // if your API provides confidence
