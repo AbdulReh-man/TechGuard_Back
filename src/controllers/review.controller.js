@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 
 // POST - Add review
-const execAsync = util.promisify(exec);
 const ai_api = "https://ai-review-detect.onrender.com/predict";
 
 // export const createReview = async (req, res) => {
