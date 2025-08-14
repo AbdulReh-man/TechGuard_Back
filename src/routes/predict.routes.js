@@ -5,7 +5,7 @@ router.route("/predict").get((req, res) => {
   const review = req.query.review;
   if (!review) return res.status(400).json({ error: "Review is required" });
 
-  const command = `./venv/bin/python ./utils/predict.py "${review.replace(/"/g, '\\"')}"`;
+  const command = `python3 ./utils/predict.py "${review.replace(/"/g, '\\"')}"`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
