@@ -27,7 +27,7 @@ export const createReview = async (req, res) => {
 
     // Path to your predict.py script
     const scriptPath = path.resolve('./utils/predict.py');
-    const pythonPath = path.resolve('python3');
+    const pythonPath = 'python3';
 
     let aiResult = { isFake: false, confidenceScore: 0 };
 
