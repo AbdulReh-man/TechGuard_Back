@@ -114,6 +114,9 @@ export const createReview = async (req, res) => {
     const scriptPath = path.resolve("./utils/predict.py");
     const pythonPath = getPythonPath();
 
+    console.log("Script: ", scriptPath);
+    console.log("Python: ", pythonPath);
+
     let aiResult = { isFake: false, confidenceScore: 0 };
 
     if (comment) {
