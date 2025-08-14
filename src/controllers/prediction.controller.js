@@ -67,7 +67,8 @@ const predictNews = async (req, res) => {
 
     const options = {
       mode: "text",
-      pythonPath: "./venv/bin/python", // Adjust path based on your OS/environment
+      // pythonPath: "./venv/bin/python", // Adjust path based on your OS/environment
+      pythonPath: "python3",
       scriptPath: "./utils",
       args: [text],
       stderr: true, // Include stderr output for error handling
