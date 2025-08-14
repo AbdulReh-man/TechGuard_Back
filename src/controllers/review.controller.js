@@ -1,33 +1,118 @@
-// controllers/reviewController.js
-import { Review } from '../models/review.model.js';
-import mongoose from 'mongoose';
-import { exec } from 'child_process';
-import path from 'path';
-import util from 'util';
-// POST - Add review
+// // controllers/reviewController.js
+// import { Review } from '../models/review.model.js';
+// import mongoose from 'mongoose';
+// import { exec } from 'child_process';
+// import path from 'path';
+// import util from 'util';
+// // POST - Add review
+// const execAsync = util.promisify(exec);
+
+// export const createReview = async (req, res) => {
+//   try {
+//     const { refId, refType, rating, comment } = req.body;
+//     console.log("body",req.body);
+    
+
+//     if (!refId || !refType || !rating) {
+//       return res.status(400).json({ message: 'refId, refType, and rating are required.' });
+//     }
+
+//     if (!['Product', 'Service'].includes(refType)) {
+//       return res.status(400).json({ message: 'Invalid refType. Must be "Product" or "Service"' });
+//     }
+
+//     if (rating < 1 || rating > 5) {
+//       return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+//     }
+
+//     // Path to your predict.py script
+//     const scriptPath = path.resolve('./utils/predict.py');
+//     const pythonPath = path.resolve('./venv/bin/python');
+
+//     let aiResult = { isFake: false, confidenceScore: 0 };
+
+//     if (comment) {
+//       try {
+//         const command = `${pythonPath} ${scriptPath} "${comment.replace(/"/g, '\\"')}"`;
+//         const { stdout } = await execAsync(command);
+//         const result = JSON.parse(stdout); // Make sure your Python script returns valid JSON
+//         // console.log("result",result.prediction,result.confidence);
+        
+//         aiResult = {
+//           isFake: result.prediction,
+//           confidenceScore: result.confidence
+//         };
+//         // console.log("airesult",aiResult);
+        
+//       } catch (error) {
+//         console.error('AI analysis failed:', error.message);
+//       }
+//     }
+
+//     const newReview = new Review({
+//       user: req.user._id,
+//       refId,
+//       refType,
+//       rating,
+//       comment,
+//       aiAnalysis: aiResult
+//     });
+
+
+//     await newReview.save();
+
+//     res.status(201).json({ message: 'Review added successfully', review: newReview });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error creating review', error: error.message });
+//   }
+// };
+
+import { Review } from "../models/review.model.js";
+import mongoose from "mongoose";
+import { exec } from "child_process";
+import path from "path";
+import util from "util";
+
 const execAsync = util.promisify(exec);
+
+// Helper to get correct python path depending on environment
+function getPythonPath() {
+  if (process.env.RENDER) {
+    // On Render, our venv is at .venv/bin/python
+    return path.resolve(".venv/bin/python");
+  } else {
+    // Local dev: adjust if your venv folder name is different
+    return path.resolve("./venv/bin/python");
+  }
+}
 
 export const createReview = async (req, res) => {
   try {
     const { refId, refType, rating, comment } = req.body;
-    console.log("body",req.body);
-    
+    console.log("body", req.body);
 
     if (!refId || !refType || !rating) {
-      return res.status(400).json({ message: 'refId, refType, and rating are required.' });
+      return res
+        .status(400)
+        .json({ message: "refId, refType, and rating are required." });
     }
 
-    if (!['Product', 'Service'].includes(refType)) {
-      return res.status(400).json({ message: 'Invalid refType. Must be "Product" or "Service"' });
+    if (!["Product", "Service"].includes(refType)) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid refType. Must be "Product" or "Service"' });
     }
 
     if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+      return res
+        .status(400)
+        .json({ message: "Rating must be between 1 and 5." });
     }
 
-    // Path to your predict.py script
-    const scriptPath = path.resolve('./utils/predict.py');
-    const pythonPath = path.resolve('./venv/bin/python');
+    const scriptPath = path.resolve("./utils/predict.py");
+    const pythonPath = getPythonPath();
 
     let aiResult = { isFake: false, confidenceScore: 0 };
 
@@ -35,17 +120,15 @@ export const createReview = async (req, res) => {
       try {
         const command = `${pythonPath} ${scriptPath} "${comment.replace(/"/g, '\\"')}"`;
         const { stdout } = await execAsync(command);
-        const result = JSON.parse(stdout); // Make sure your Python script returns valid JSON
-        // console.log("result",result.prediction,result.confidence);
-        
+        const result = JSON.parse(stdout);
+
         aiResult = {
           isFake: result.prediction,
-          confidenceScore: result.confidence
+          confidenceScore: result.confidence,
         };
-        // console.log("airesult",aiResult);
-        
+        console.log("airesult", aiResult);
       } catch (error) {
-        console.error('AI analysis failed:', error.message);
+        console.error("AI analysis failed:", error.message);
       }
     }
 
@@ -55,19 +138,22 @@ export const createReview = async (req, res) => {
       refType,
       rating,
       comment,
-      aiAnalysis: aiResult
+      aiAnalysis: aiResult,
     });
-
 
     await newReview.save();
 
-    res.status(201).json({ message: 'Review added successfully', review: newReview });
-
+    res
+      .status(201)
+      .json({ message: "Review added successfully", review: newReview });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating review', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error creating review", error: error.message });
   }
 };
+
 
 // PUT - Update review
 export const updateReview = async (req, res) => {
