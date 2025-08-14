@@ -58,7 +58,6 @@ import { PythonShell } from "python-shell";
 const predictNews = async (req, res) => {
   try {
     const { text } = req.body;
-
     console.log("Received text:", text);
 
     if (!text) {
@@ -67,48 +66,57 @@ const predictNews = async (req, res) => {
 
     const options = {
       mode: "text",
-      // pythonPath: "./venv/bin/python", // Adjust path based on your OS/environment
       pythonPath: "python3",
       scriptPath: "./utils",
       args: [text],
-      stderr: true, // Include stderr output for error handling
+      stderr: true,
     };
 
     console.log("PythonShell options:", options);
 
-    PythonShell.run("predict.py", options, (err, results) => {
-      console.log("Returned from Python script");
-      console.log("Raw results:", results);
+    let pyshell = new PythonShell("predict.py", options);
+    let output = "";
+    let errorOutput = "";
 
+    pyshell.on("message", (message) => {
+      console.log("Python stdout:", message);
+      output += message;
+    });
+
+    pyshell.stderr.on("data", (data) => {
+      console.error("Python stderr:", data.toString());
+      errorOutput += data.toString();
+    });
+
+    pyshell.end((err) => {
       if (err) {
         console.error("PythonShell Error:", err);
-        return res.status(500).json({
-          error: "Prediction failed",
-          details: err.message || "Unknown Python error",
-        });
+        return res
+          .status(500)
+          .json({ error: "Prediction failed", details: err.message });
       }
 
-      if (!results || results.length === 0) {
-        console.error("No output received from Python script");
-        return res.status(500).json({
-          error: "No output from prediction script",
-        });
+      if (errorOutput) {
+        console.error("Python script error output:", errorOutput);
+      }
+
+      if (!output.trim()) {
+        return res
+          .status(500)
+          .json({ error: "No output from prediction script" });
       }
 
       try {
-        const cleanedOutput = results[0].trim();
-        console.log("Cleaned output:", cleanedOutput);
-
-        const prediction = JSON.parse(cleanedOutput);
-        console.log("Parsed Prediction:", prediction);
-
+        const prediction = JSON.parse(output.trim());
         res.json(prediction);
       } catch (parseError) {
         console.error("JSON Parse Error:", parseError.message);
-        res.status(500).json({
-          error: "Failed to parse prediction",
-          details: parseError.message,
-        });
+        res
+          .status(500)
+          .json({
+            error: "Failed to parse prediction",
+            details: parseError.message,
+          });
       }
     });
   } catch (error) {
