@@ -4,8 +4,7 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 
 // POST - Add review
-// const ai_api = "https://ai-review-detect.onrender.com/predict";
-const ai_api = "http://0.0.0.0:10000/predict";
+const ai_api = "https://huggingface.co/spaces/abdul47/space/predict";
 //
 
 export const createReview = async (req, res) => {
@@ -40,11 +39,14 @@ export const createReview = async (req, res) => {
         console.log("AI Response from Server: ", result);
         
         aiResult = {
-          isFake: result.prediction[0] === 1, // convert 1/0 to boolean
-          confidenceScore: result.confidence || 0, // if your API provides confidence
+          isFake: result.prediction, // convert 1/0 to boolean
+          confidenceScore: result.confidence, // if your API provides confidence
         };
       } catch (error) {
         console.error("AI analysis failed:", error.message);
+        return res
+          .status(500)
+          .json({ message: "AI analysis failed.", error: error.message });
       }
     }
 
