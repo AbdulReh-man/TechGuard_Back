@@ -4,8 +4,7 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 
 // POST - Add review
-const ai_api = "https://huggingface.co/spaces/abdul47/space/predict";
-//
+const ai_api = "https://abdul47-ai-model.hf.space/predict";
 
 export const createReview = async (req, res) => {
   try {
@@ -35,12 +34,11 @@ export const createReview = async (req, res) => {
     if (comment) {
       try {
         const response = await axios.post(ai_api, { text: comment });
-        const result = response.data; // { prediction: [0] }
-        console.log("AI Response from Server: ", result);
-        
+        console.log("AI Response from Server: ", response);
+        const result = response.data; // first item in array
         aiResult = {
-          isFake: result.prediction, // convert 1/0 to boolean
-          confidenceScore: result.confidence, // if your API provides confidence
+          isFake: result.prediction,
+          confidenceScore: parseFloat(result.confidence),
         };
       } catch (error) {
         console.error("AI analysis failed:", error.message);
